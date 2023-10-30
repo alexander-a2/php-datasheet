@@ -7,10 +7,14 @@ use AlexanderA2\PhpDatasheet\Builder\Column\QueryBuilderDatasheetColumnBuilder;
 use AlexanderA2\PhpDatasheet\Builder\DatasheetBuilder;
 use AlexanderA2\PhpDatasheet\DataReader\ArrayDataReader;
 use AlexanderA2\PhpDatasheet\DataReader\QueryBuilderDataReader;
-use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\ColumnFilter\ContainsFilterApplier;
-use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\ColumnFilter\EqualsFilterApplier;
-use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\DatasheetFilter\PaginationFilterApplier;
-use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\DatasheetFilter\SortFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\ColumnFilter\ContainsFilterApplier as ArrayDatasheetColumnContainsFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\ColumnFilter\EqualsFilterApplier as ArrayDatasheetColumnEqualsFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\DatasheetFilter\PaginationFilterApplier as ArrayDatasheetPaginationFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\ArrayDatasheet\DatasheetFilter\SortFilterApplier as ArrayDatasheetSortFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\QueryBuilderDatasheet\ColumnFilter\ContainsFilterApplier as QueryBuilderDatasheetColumnContainsFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\QueryBuilderDatasheet\ColumnFilter\EqualsFilterApplier as QueryBuilderDatasheetColumnEqualsFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\QueryBuilderDatasheet\DatasheetFilter\PaginationFilterApplier as QueryBuilderDatasheetPaginationFilterApplier;
+use AlexanderA2\PhpDatasheet\FilterApplier\QueryBuilderDatasheet\DatasheetFilter\SortFilterApplier as QueryBuilderDatasheetSortFilterApplier;
 use AlexanderA2\PhpDatasheet\Resolver\ColumnBuilderResolver;
 use AlexanderA2\PhpDatasheet\Resolver\DataReaderResolver;
 use AlexanderA2\PhpDatasheet\Resolver\FilterApplierResolver;
@@ -45,10 +49,14 @@ class DatasheetBuilderFactory
     protected function getFilterApplierResolver(): FilterApplierResolver
     {
         return new FilterApplierResolver([
-            new PaginationFilterApplier(),
-            new SortFilterApplier(),
-            new EqualsFilterApplier(),
-            new ContainsFilterApplier(),
+            new ArrayDatasheetPaginationFilterApplier(),
+            new ArrayDatasheetSortFilterApplier(),
+            new ArrayDatasheetColumnEqualsFilterApplier(),
+            new ArrayDatasheetColumnContainsFilterApplier(),
+            new QueryBuilderDatasheetPaginationFilterApplier(),
+            new QueryBuilderDatasheetSortFilterApplier(),
+            new QueryBuilderDatasheetColumnEqualsFilterApplier(),
+            new QueryBuilderDatasheetColumnContainsFilterApplier(),
         ]);
     }
 }

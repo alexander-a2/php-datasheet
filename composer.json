@@ -1,0 +1,22 @@
+{
+    "name": "alexander-a2/php-datasheet",
+    "description": "Datasheet library",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "AlexanderA2\\PhpDatasheet\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexander A2",
+            "email": "alexander.advanced@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "doctrine/orm": "^2",
+        "greenlion/php-sql-parser": "dev-master"
+    }
+}

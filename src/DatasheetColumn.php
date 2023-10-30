@@ -9,11 +9,11 @@ class DatasheetColumn implements DatasheetColumnInterface
 {
     protected string $title;
 
-    protected $handler = null;
+    protected mixed $handler = null;
 
     public function __construct(
         protected string $name,
-        protected string $dataType,
+        protected ?string $dataType,
     ) {
         $this->title = StringHelper::toReadable($this->name);
     }
@@ -39,7 +39,7 @@ class DatasheetColumn implements DatasheetColumnInterface
         return $this;
     }
 
-    public function getHandler()
+    public function getHandler(): mixed
     {
         return $this->handler;
     }

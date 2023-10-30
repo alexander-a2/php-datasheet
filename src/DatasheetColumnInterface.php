@@ -17,5 +17,9 @@ interface DatasheetColumnInterface
 
     public function setTitle(string $title): self;
 
+    public function getHandler(): mixed;
+
+    public function setHandler($handler): self;
+
     public function getContent(mixed $record): string;
 }

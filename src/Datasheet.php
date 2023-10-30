@@ -13,11 +13,13 @@ class Datasheet implements DatasheetInterface
         'column_filters' => 'cf',
     ];
 
+    protected bool $isBuilt = false;
+
     protected ArrayCollection $data;
 
-    protected array $columnsAfterBuild;
+    protected array $columns;
 
-    protected array $columnsBeforeBuild;
+    protected array $customizedColumns;
 
     protected DataReaderInterface $dataReader;
 
@@ -61,30 +63,28 @@ class Datasheet implements DatasheetInterface
 
     public function addColumn(DatasheetColumn $column): self
     {
-        $this->columnsAfterBuild[$column->getName()] = $column;
+        $this->columns[$column->getName()] = $column;
 
         return $this;
     }
 
-    public function setColumn(DatasheetColumn $column): self
+    public function getColumn(string $name): DatasheetColumnInterface
     {
-        if (empty($this->columnsAfterBuild)) {
-            $this->columnsBeforeBuild[$column->getName()] = $column;
-        } else {
-            $this->columnsAfterBuild[$column->getName()] = $column;
+        if (empty($this->customizedColumns[$name])) {
+            $this->customizedColumns[$name] = new DatasheetColumnCustomized($name, null);
         }
 
-        return $this;
+        return $this->customizedColumns[$name];
     }
 
     public function getColumns(): array
     {
-        return $this->columnsAfterBuild;
+        return $this->columns;
     }
 
-    public function getColumnsBeforeBuild(): array
+    public function getCustomizedColumns(): array
     {
-        return $this->columnsBeforeBuild;
+        return $this->customizedColumns ?? [];
     }
 
     public function getDataReader(): DataReaderInterface
@@ -151,6 +151,13 @@ class Datasheet implements DatasheetInterface
     public function setTotalRecordsFiltered(int $totalRecordsFiltered): self
     {
         $this->totalRecordsFiltered = $totalRecordsFiltered;
+        return $this;
+    }
+
+    public function setBuilt(): self
+    {
+        $this->isBuilt = true;
+
         return $this;
     }
 

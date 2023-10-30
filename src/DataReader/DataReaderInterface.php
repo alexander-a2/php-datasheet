@@ -9,6 +9,8 @@ interface DataReaderInterface
 {
     public function setSource(mixed $source);
 
+    public function getSource(): mixed;
+
     public function readData(): ArrayCollection;
 
     public function getTotalRecords(): int;

@@ -6,7 +6,7 @@ use Throwable;
 
 class ObjectHelper
 {
-    public static function getProperty(mixed $object, string $propertyName, $throwException = false)
+    public static function getProperty(mixed $object, string $propertyName, $throwException = false): mixed
     {
         try {
             if (is_array($object)) {
@@ -23,9 +23,32 @@ class ObjectHelper
         } catch (Throwable $exception) {
             if ($throwException) {
                 throw new $exception;
-            } else {
-                return null;
             }
         }
+
+        return null;
+    }
+
+    public static function setProperty(mixed $object, string $propertyName, mixed $value, $throwException = false): mixed
+    {
+        try {
+            if (is_array($object)) {
+                $object[$propertyName] = $value;
+            }
+
+            if (is_object($object)) {
+                $setter = 'set' . $propertyName;
+
+                if (method_exists($object, $setter)) {
+                    $object->{$setter}($value);
+                }
+            }
+        } catch (Throwable $exception) {
+            if ($throwException) {
+                throw new $exception;
+            }
+        }
+
+        return $object;
     }
 }

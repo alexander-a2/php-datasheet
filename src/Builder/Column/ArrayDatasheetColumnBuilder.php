@@ -23,12 +23,8 @@ class ArrayDatasheetColumnBuilder implements ColumnBuilderInterface
         $firstRow = $datasheet->getSource()[0];
 
         foreach ($firstRow as $columnName => $sampleValue) {
-            if (array_key_exists($columnName, $datasheet->getColumnsBeforeBuild())) {
-                $datasheet->addColumn($datasheet->getColumnsBeforeBuild()[$columnName]);
-            } else {
-                $dataType = empty($sampleValue) ? ObjectDataType::class : $dataTypeResolver->guess($sampleValue);
-                $datasheet->addColumn(new DatasheetColumn($columnName, $dataType));
-            }
+            $dataType = empty($sampleValue) ? ObjectDataType::class : $dataTypeResolver->guess($sampleValue);
+            $datasheet->addColumn(new DatasheetColumn($columnName, $dataType));
         }
 
         return $datasheet;

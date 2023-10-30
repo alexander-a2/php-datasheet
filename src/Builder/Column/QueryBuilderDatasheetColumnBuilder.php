@@ -5,14 +5,14 @@ namespace AlexanderA2\PhpDatasheet\Builder\Column;
 use AlexanderA2\PhpDatasheet\DatasheetColumn;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\DataType\BooleanDataType;
-use AlexanderA2\PhpDatasheet\DataType\DataTypeInterface;
 use AlexanderA2\PhpDatasheet\DataType\DateDataType;
 use AlexanderA2\PhpDatasheet\DataType\DateTimeDataType;
+use AlexanderA2\PhpDatasheet\DataType\FloatDataType;
+use AlexanderA2\PhpDatasheet\DataType\IntegerDataType;
 use AlexanderA2\PhpDatasheet\DataType\ObjectDataType;
 use AlexanderA2\PhpDatasheet\DataType\StringDataType;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\QueryBuilderHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Select;
 use Doctrine\ORM\QueryBuilder;
 
@@ -25,11 +25,10 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
 
     public function addColumnsToDatasheet(DatasheetInterface $datasheet): DatasheetInterface
     {
-        $columns = new ArrayCollection();
         $selects = $this->getSelectsFromQueryBuilder($datasheet->getSource());
 
         foreach ($selects as $fieldName => $fieldType) {
-            $columns->add(new DatasheetColumn($this->resolveDataType($fieldType)));
+            $datasheet->addColumn(new DatasheetColumn($fieldName, $this->resolveDataType($fieldType)));
         }
 
         return $datasheet;
@@ -58,17 +57,17 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
         }
     }
 
-    protected function resolveDataType($fieldType): DataTypeInterface
+    protected function resolveDataType($fieldType): string
     {
-        $className = match ($fieldType) {
+        return match ($fieldType) {
             'string',
             'text',
             'guid' => StringDataType::class,
             'smallint',
             'integer',
-            'bigint',
+            'bigint' => IntegerDataType::class,
             'decimal',
-            'float' => NumericDataType::class,
+            'float' => FloatDataType::class,
             'datetime',
             'datetimetz',
             'date_immutable' => DateTimeDataType::class,
@@ -76,7 +75,5 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
             'boolean' => BooleanDataType::class,
             default => ObjectDataType::class,
         };
-
-        return new $className;
     }
 }

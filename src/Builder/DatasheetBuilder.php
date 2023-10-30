@@ -5,12 +5,14 @@ namespace AlexanderA2\PhpDatasheet\Builder;
 
 use AlexanderA2\PhpDatasheet\Builder\Column\ColumnBuilderInterface;
 use AlexanderA2\PhpDatasheet\DataReader\DataReaderInterface;
+use AlexanderA2\PhpDatasheet\DatasheetColumnInterface;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\Filter\FilterInterface;
 use AlexanderA2\PhpDatasheet\Filter\PaginationFilter;
 use AlexanderA2\PhpDatasheet\Filter\SortFilter;
 use AlexanderA2\PhpDatasheet\FilterApplier\FilterApplierContext;
 use AlexanderA2\PhpDatasheet\FilterApplier\FilterApplierInterface;
+use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
 use AlexanderA2\PhpDatasheet\Resolver\ColumnBuilderResolver;
 use AlexanderA2\PhpDatasheet\Resolver\DataReaderResolver;
 use AlexanderA2\PhpDatasheet\Resolver\FilterApplierResolver;
@@ -28,6 +30,7 @@ class DatasheetBuilder
     {
         $this->resolveDataReader($datasheet);
         $this->buildColumns($datasheet);
+        $this->updateCustomizedColumns($datasheet);
         $this->attachDatasheetFilters($datasheet);
         $this->attachColumnFilters($datasheet);
         $this->fillFiltersWithRequestedParams($datasheet, $parameters);
@@ -35,6 +38,7 @@ class DatasheetBuilder
         $this->applyFilters($datasheet);
         $this->buildFilteredTotals($datasheet);
         $this->readData($datasheet);
+        $datasheet->setBuilt();
 
         return $datasheet;
     }
@@ -52,6 +56,22 @@ class DatasheetBuilder
         /** @var ColumnBuilderInterface $columnBuilder */
         $columnBuilder = $this->columnBuilderResolver->resolve($datasheet);
         $columnBuilder->addColumnsToDatasheet($datasheet);
+    }
+
+    protected function updateCustomizedColumns(DatasheetInterface $datasheet)
+    {
+        foreach ($datasheet->getCustomizedColumns() as $columnName => $customizedColumn) {
+            /** @var DatasheetColumnInterface $column */
+            $column = $datasheet->getColumns()[$columnName];
+
+            foreach ($customizedColumn->getCustomizedAttributes() as $attribute) {
+                ObjectHelper::setProperty(
+                    $column,
+                    $attribute,
+                    ObjectHelper::getProperty($customizedColumn, $attribute)
+                );
+            }
+        }
     }
 
     protected function attachDatasheetFilters(DatasheetInterface $datasheet): void
