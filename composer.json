@@ -16,7 +16,6 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "doctrine/orm": "^2",
-        "greenlion/php-sql-parser": "dev-master"
+        "doctrine/orm": "^2"
     }
 }
