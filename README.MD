@@ -1,1 +1,1 @@
-This package allows to create great datasheet in a seconds.
+PHP Datasheet Package
