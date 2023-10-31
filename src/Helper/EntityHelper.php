@@ -75,7 +75,7 @@ class EntityHelper
         return null;
     }
 
-    protected static function getEntityMetadata(string $className, EntityManagerInterface $entityManager): ClassMetadata
+    public static function getEntityMetadata(string $className, EntityManagerInterface $entityManager): ClassMetadata
     {
         if (!array_key_exists($className, self::$entityMetadataCached)) {
             self::$entityMetadataCached[$className] = $entityManager->getClassMetadata($className);
