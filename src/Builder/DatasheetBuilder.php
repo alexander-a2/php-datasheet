@@ -58,7 +58,7 @@ class DatasheetBuilder
         $columnBuilder->addColumnsToDatasheet($datasheet);
     }
 
-    protected function updateCustomizedColumns(DatasheetInterface $datasheet)
+    protected function updateCustomizedColumns(DatasheetInterface $datasheet): void
     {
         foreach ($datasheet->getCustomizedColumns() as $columnName => $customizedColumn) {
             /** @var DatasheetColumnInterface $column */

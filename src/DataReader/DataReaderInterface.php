@@ -2,7 +2,7 @@
 
 namespace AlexanderA2\PhpDatasheet\DataReader;
 
-use AlexanderA2\PhpDatasheet\Datasheet;
+use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
 interface DataReaderInterface
@@ -15,5 +15,5 @@ interface DataReaderInterface
 
     public function getTotalRecords(): int;
 
-    public static function supports(Datasheet $datasheet): bool;
+    public static function supports(DatasheetInterface $datasheet): bool;
 }

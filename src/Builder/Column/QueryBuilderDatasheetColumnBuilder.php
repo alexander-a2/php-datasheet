@@ -15,6 +15,7 @@ use AlexanderA2\PhpDatasheet\DataType\ObjectsDataType;
 use AlexanderA2\PhpDatasheet\DataType\StringDataType;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\QueryBuilderHelper;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
@@ -23,7 +24,7 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
 {
     public static function supports(DatasheetInterface $datasheet): bool
     {
-        return $datasheet->getSource() instanceof QueryBuilder;
+        return $datasheet->getSource() instanceof QueryBuilder || $datasheet->getSource() instanceof ServiceEntityRepository;
     }
 
     public function addColumnsToDatasheet(DatasheetInterface $datasheet): DatasheetInterface

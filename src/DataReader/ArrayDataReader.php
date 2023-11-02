@@ -2,7 +2,7 @@
 
 namespace AlexanderA2\PhpDatasheet\DataReader;
 
-use AlexanderA2\PhpDatasheet\Datasheet;
+use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class ArrayDataReader extends AbstractDataReader implements DataReaderInterface
@@ -30,7 +30,7 @@ class ArrayDataReader extends AbstractDataReader implements DataReaderInterface
         return $this->unfilteredRecordsTotal;
     }
 
-    public static function supports(Datasheet $datasheet): bool
+    public static function supports(DatasheetInterface $datasheet): bool
     {
         return is_array($datasheet->getSource());
     }
