@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace AlexanderA2\PhpDatasheet\DataType;
 
+use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use DateTimeInterface;
 use Exception;
 
@@ -18,6 +19,17 @@ class ObjectDataType implements DataTypeInterface
 
         if ($value instanceof DateTimeInterface) {
             return $value->format(DATE_COOKIE);
+        }
+
+        if (is_array($value)) {
+            foreach (EntityHelper::PRIMARY_FIELD_TYPICAL_NAMES as $key) {
+                if (isset($value[$key]) && is_scalar($value[$key])) {
+                    return self::prepare(
+                        (isset($value['id']) && is_numeric($value['id']) ? '#' . $value['id'] . ' ' : '')
+                        . $value[$key]
+                    );
+                }
+            }
         }
 
         return 'object';
@@ -37,7 +49,6 @@ class ObjectDataType implements DataTypeInterface
     {
         return [];
     }
-
 
     public static function is(mixed $value): bool
     {

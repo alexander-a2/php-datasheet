@@ -7,7 +7,7 @@ use AlexanderA2\PhpDatasheet\DatasheetBuildException;
 abstract class AbstractServiceResolver
 {
     public function __construct(
-        protected array $services,
+        protected iterable $services,
     ) {
     }
 

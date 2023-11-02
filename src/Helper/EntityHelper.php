@@ -4,11 +4,17 @@ namespace AlexanderA2\PhpDatasheet\Helper;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ReflectionClass;
 
 class EntityHelper
 {
-    private const PRIMARY_FIELD_TYPICAL_NAMES = [
+    public const RELATION_FIELD_TYPES = [
+        ClassMetadataInfo::MANY_TO_ONE => 'many_to_one',
+        ClassMetadataInfo::MANY_TO_MANY => 'many_to_many',
+    ];
+
+    public const PRIMARY_FIELD_TYPICAL_NAMES = [
         'name',
         'firstname',
         'firstName',
@@ -17,7 +23,6 @@ class EntityHelper
         'full_name',
         'title',
         'email',
-        'id',
     ];
 
     static array $entityMetadataCached = [];
@@ -34,11 +39,11 @@ class EntityHelper
             $fields[$fieldName] = $fieldMapping['type'];
         }
 
-//        foreach ($classMetadata->getAssociationMappings() as $relation) {
-//            if ($relation['type'] === ClassMetadataInfo::MANY_TO_ONE) {
-//                $fields[$relation['fieldName']] = 'many_to_one';
-//            }
-//        }
+        foreach ($classMetadata->getAssociationMappings() as $relation) {
+            if (array_key_exists($relation['type'], self::RELATION_FIELD_TYPES)) {
+                $fields[$relation['fieldName']] = self::RELATION_FIELD_TYPES[$relation['type']];
+            }
+        }
         $sortedFields = [];
 
         foreach ((new ReflectionClass($className))->getProperties() as $property) {
@@ -73,6 +78,17 @@ class EntityHelper
         }
 
         return null;
+    }
+
+    public static function getRelationClassName(
+        string                 $baseEntityClassName,
+        string                 $relationFieldName,
+        EntityManagerInterface $entityManager
+    ): string {
+        $relation = self::getEntityMetadata($baseEntityClassName, $entityManager)
+            ->getAssociationMapping($relationFieldName);
+
+        return $relation['targetEntity'];
     }
 
     public static function getEntityMetadata(string $className, EntityManagerInterface $entityManager): ClassMetadata
