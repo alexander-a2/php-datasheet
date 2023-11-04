@@ -22,7 +22,7 @@ class DatasheetColumnCustomized extends DatasheetColumn
 
     public function setTitle(string $title): self
     {
-        $this->customizedAttributes[] = 'handler';
+        $this->customizedAttributes[] = 'title';
 
         return parent::setTitle($title);
     }
