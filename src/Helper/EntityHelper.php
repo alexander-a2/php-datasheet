@@ -2,6 +2,14 @@
 
 namespace AlexanderA2\PhpDatasheet\Helper;
 
+use AlexanderA2\PhpDatasheet\DataType\BooleanDataType;
+use AlexanderA2\PhpDatasheet\DataType\DateDataType;
+use AlexanderA2\PhpDatasheet\DataType\DateTimeDataType;
+use AlexanderA2\PhpDatasheet\DataType\FloatDataType;
+use AlexanderA2\PhpDatasheet\DataType\IntegerDataType;
+use AlexanderA2\PhpDatasheet\DataType\ObjectDataType;
+use AlexanderA2\PhpDatasheet\DataType\ObjectsDataType;
+use AlexanderA2\PhpDatasheet\DataType\StringDataType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -98,5 +106,41 @@ class EntityHelper
         }
 
         return self::$entityMetadataCached[$className];
+    }
+
+    public static function getEntityPrimaryAttribute(
+        string                 $entityClassName,
+        EntityManagerInterface $entityManager
+    ): ?string {
+        $fields = self::getEntityFields($entityClassName, $entityManager);
+
+        foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
+            if (array_key_exists($name, $fields)) {
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
+    public static function resolveDataTypeByFieldType(string $fieldType): string
+    {
+        return match ($fieldType) {
+            'string',
+            'text',
+            'guid' => StringDataType::class,
+            'smallint',
+            'integer',
+            'bigint' => IntegerDataType::class,
+            'decimal',
+            'float' => FloatDataType::class,
+            'datetime',
+            'datetimetz',
+            'date_immutable' => DateTimeDataType::class,
+            'date' => DateDataType::class,
+            'boolean' => BooleanDataType::class,
+            self::RELATION_FIELD_TYPES[ClassMetadataInfo::MANY_TO_MANY] => ObjectsDataType::class,
+            default => ObjectDataType::class,
+        };
     }
 }

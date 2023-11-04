@@ -4,6 +4,7 @@ namespace AlexanderA2\PhpDatasheet\DataReader;
 
 use AlexanderA2\PhpDatasheet\DatasheetBuildException;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
+use AlexanderA2\PhpDatasheet\Exception\NotSupportsException;
 use AlexanderA2\PhpDatasheet\Helper\QueryBuilderHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Join;
@@ -21,6 +22,27 @@ class QueryBuilderDataReader extends AbstractDataReader implements DataReaderInt
         $this->originalQueryBuilder = clone $source;
 
         return $this;
+    }
+
+    public function readData(): ArrayCollection
+    {
+        $result = $this->getQueryBuilder()->getQuery()->getResult();
+
+        return new ArrayCollection($result);
+    }
+
+    public function getTotalRecords(): int
+    {
+        $queryBuilder = clone($this->getQueryBuilder());
+        $this->removeLeftJoins($queryBuilder);
+        $queryBuilder
+            ->resetDQLPart('select')
+            ->addSelect(sprintf('COUNT(%s.id) AS total', QueryBuilderHelper::getPrimaryAlias($queryBuilder)))
+//            ->resetDQLPart('groupBy')
+            ->setFirstResult(null)
+            ->setMaxResults(null);
+
+        return $queryBuilder->getQuery()->getSingleScalarResult();
     }
 
     protected function getQueryBuilder(): QueryBuilder
@@ -46,28 +68,26 @@ class QueryBuilderDataReader extends AbstractDataReader implements DataReaderInt
         return $joinAlias;
     }
 
-    public function readData(): ArrayCollection
+    protected function removeLeftJoins(QueryBuilder $queryBuilder): void
     {
-//        dd($this->getQueryBuilder());
-//        dd($this->getQueryBuilder()->getQuery()->getSQL());
-        $result = $this->getQueryBuilder()->getQuery()->getArrayResult();
-//        dd($result);
+        $joins = $queryBuilder->getDQLPart('join');
+        $filteredJoins = [];
 
-        return new ArrayCollection($result);
-    }
+        foreach ($joins as $alias => $aliasJoins) {
+            /** @var Join $join */
+            foreach ($aliasJoins as $join) {
+                if ($alias === QueryBuilderHelper::getPrimaryAlias($queryBuilder) && $join->getJoinType() === 'LEFT') {
+                    continue;
+                }
+                $filteredJoins[] = $join;
+            }
+        }
+        $queryBuilder->resetDQLPart('join');
 
-    public function getTotalRecords(): int
-    {
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = clone($this->getSource());
-        $queryBuilder
-            ->resetDQLPart('select')
-            ->resetDQLPart('groupBy')
-            ->addSelect(sprintf('COUNT(%s.id) AS total', QueryBuilderHelper::getPrimaryAlias($queryBuilder)))
-            ->setFirstResult(null)
-            ->setMaxResults(null);
-
-        return $queryBuilder->getQuery()->getSingleScalarResult();
+        if (count($filteredJoins)) {
+            throw new NotSupportsException();
+        }
+//      $queryBuilder->add($joinType, $alias, $joinData['alias'], $joinData['conditionType'], $joinData['condition']);
     }
 
     public static function supports(DatasheetInterface $datasheet): bool

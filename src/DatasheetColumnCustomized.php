@@ -2,11 +2,16 @@
 
 namespace AlexanderA2\PhpDatasheet;
 
-use AlexanderA2\PhpDatasheet\Helper\StringHelper;
-
 class DatasheetColumnCustomized extends DatasheetColumn
 {
     protected array $customizedAttributes = [];
+
+    public function setDataType(?string $dataType): DatasheetColumn
+    {
+        $this->customizedAttributes[] = 'dataType';
+
+        return parent::setDataType($dataType);
+    }
 
     public function setHandler($handler): self
     {

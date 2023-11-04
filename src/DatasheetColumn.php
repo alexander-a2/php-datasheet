@@ -28,6 +28,12 @@ class DatasheetColumn implements DatasheetColumnInterface
         return $this->dataType;
     }
 
+    public function setDataType(?string $dataType): self
+    {
+        $this->dataType = $dataType;
+        return $this;
+    }
+
     public function getTitle(): string
     {
         return $this->title;

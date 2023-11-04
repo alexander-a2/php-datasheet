@@ -4,8 +4,11 @@ declare(strict_types=1);
 namespace AlexanderA2\PhpDatasheet\DataType;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
+use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
+use AlexanderA2\PhpDatasheet\Helper\StringHelper;
 use DateTimeInterface;
 use Exception;
+use Throwable;
 
 class ObjectDataType implements DataTypeInterface
 {
@@ -30,6 +33,20 @@ class ObjectDataType implements DataTypeInterface
                     );
                 }
             }
+        }
+
+        if (is_object($value)) {
+            try {
+                return (string)$value;
+            } catch (Throwable) {
+            }
+
+            try {
+                return sprintf('%s #%s', StringHelper::getShortClassName($value), $value->getId());
+            } catch (Throwable) {
+            }
+
+            return StringHelper::getShortClassName($value);
         }
 
         return 'object';

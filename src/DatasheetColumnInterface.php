@@ -13,6 +13,8 @@ interface DatasheetColumnInterface
 
     public function getDataType(): string;
 
+    public function setDataType(?string $dataType): self;
+
     public function getTitle(): string;
 
     public function setTitle(string $title): self;

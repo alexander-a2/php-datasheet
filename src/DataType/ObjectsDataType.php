@@ -11,7 +11,7 @@ class ObjectsDataType implements DataTypeInterface
 
     public static function toString($value): string
     {
-        if (is_array($value)) {
+        if (is_iterable($value)) {
             $stringParts = [];
 
             foreach($value as $item){
