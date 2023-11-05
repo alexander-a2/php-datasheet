@@ -13,6 +13,7 @@ use AlexanderA2\PhpDatasheet\DataType\StringDataType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Exception;
 use ReflectionClass;
 
 class EntityHelper
@@ -33,13 +34,23 @@ class EntityHelper
         'email',
     ];
 
-    static array $entityMetadataCached = [];
+    protected array $entityMetadataCached = [];
 
     static array $entityListCached;
 
-    public static function getEntityFields(string $className, EntityManagerInterface $entityManager): array
+    public function __construct(
+        protected EntityManagerInterface $entityManager,
+    ) {
+    }
+
+    public static function get(EntityManagerInterface $entityManager): self
     {
-        $classMetadata = self::getEntityMetadata($className, $entityManager);
+        return new self($entityManager);
+    }
+
+    public function getEntityFields(string $className): array
+    {
+        $classMetadata = $this->getMetadata($className);
         $fields = [];
 
         foreach ($classMetadata->getFieldNames() as $fieldName) {
@@ -62,6 +73,21 @@ class EntityHelper
         }
 
         return $sortedFields;
+    }
+
+    public function getFieldType(string $className, string $fieldName): string
+    {
+        if (in_array($fieldName, $this->getMetadata($className)->getFieldNames())) {
+            return $this->getMetadata($className)->getFieldMapping($fieldName)['type'];
+        }
+
+        if (array_key_exists($fieldName, $this->getMetadata($className)->getAssociationMappings())) {
+            $relation = $this->getMetadata($className)->getAssociationMapping($fieldName);
+
+            return self::RELATION_FIELD_TYPES[$relation['type']];
+        }
+
+        throw new Exception('Field not found');
     }
 
     public static function getEntityList(EntityManagerInterface $entityManager): array
@@ -88,31 +114,28 @@ class EntityHelper
         return null;
     }
 
-    public static function getRelationClassName(
-        string                 $baseEntityClassName,
-        string                 $relationFieldName,
-        EntityManagerInterface $entityManager
+    public function getRelationClassName(
+        string $baseEntityClassName,
+        string $relationFieldName,
     ): string {
-        $relation = self::getEntityMetadata($baseEntityClassName, $entityManager)
-            ->getAssociationMapping($relationFieldName);
-
-        return $relation['targetEntity'];
+        return $this
+            ->getMetadata($baseEntityClassName)
+            ->getAssociationMapping($relationFieldName)['targetEntity'];
     }
 
-    public static function getEntityMetadata(string $className, EntityManagerInterface $entityManager): ClassMetadata
+    public function getMetadata(string $entityClassName): ClassMetadata
     {
-        if (!array_key_exists($className, self::$entityMetadataCached)) {
-            self::$entityMetadataCached[$className] = $entityManager->getClassMetadata($className);
+        if (!array_key_exists($entityClassName, $this->entityMetadataCached)) {
+            $this->entityMetadataCached[$entityClassName] = $this->entityManager->getClassMetadata($entityClassName);
         }
 
-        return self::$entityMetadataCached[$className];
+        return $this->entityMetadataCached[$entityClassName];
     }
 
-    public static function getEntityPrimaryAttribute(
-        string                 $entityClassName,
-        EntityManagerInterface $entityManager
+    public function getEntityPrimaryAttribute(
+        string $entityClassName,
     ): ?string {
-        $fields = self::getEntityFields($entityClassName, $entityManager);
+        $fields = $this->getEntityFields($entityClassName);
 
         foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
             if (array_key_exists($name, $fields)) {

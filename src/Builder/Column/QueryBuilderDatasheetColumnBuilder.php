@@ -45,8 +45,7 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
         string                 $entityClassName,
         EntityManagerInterface $entityManager,
     ): void {
-
-        foreach (EntityHelper::getEntityFields($entityClassName, $entityManager) as $fieldName => $fieldType) {
+        foreach (EntityHelper::get($entityManager)->getEntityFields($entityClassName) as $fieldName => $fieldType) {
             $datasheet->addColumn(new DatasheetColumn($fieldName, EntityHelper::resolveDataTypeByFieldType($fieldType)));
         }
     }
@@ -54,10 +53,8 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
     protected function getSelectsFromQueryBuilder(QueryBuilder $queryBuilder): array
     {
         $selects = $queryBuilder->getDQLPart('select');
-        $allEntityFields = EntityHelper::getEntityFields(
-            QueryBuilderHelper::getPrimaryClass($queryBuilder),
-            $queryBuilder->getEntityManager(),
-        );
+        $allEntityFields = EntityHelper::get($queryBuilder->getEntityManager())
+            ->getEntityFields(QueryBuilderHelper::getPrimaryClass($queryBuilder));
         $selectedFields = [];
 
         foreach ($selects as $select) {
