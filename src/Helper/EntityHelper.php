@@ -34,13 +34,12 @@ class EntityHelper
         'email',
     ];
 
-    protected array $entityMetadataCached = [];
-
     static array $entityListCached;
 
-    public function __construct(
-        protected EntityManagerInterface $entityManager,
-    ) {
+    protected array $entityMetadataCached = [];
+
+    public function __construct(protected EntityManagerInterface $entityManager)
+    {
     }
 
     public static function get(EntityManagerInterface $entityManager): self
@@ -90,6 +89,35 @@ class EntityHelper
         throw new Exception('Field not found');
     }
 
+    public function getRelationClassName(string $baseEntityClassName, string $relationFieldName): string
+    {
+        return $this
+            ->getMetadata($baseEntityClassName)
+            ->getAssociationMapping($relationFieldName)['targetEntity'];
+    }
+
+    public function getMetadata(string $entityClassName): ClassMetadata
+    {
+        if (!array_key_exists($entityClassName, $this->entityMetadataCached)) {
+            $this->entityMetadataCached[$entityClassName] = $this->entityManager->getClassMetadata($entityClassName);
+        }
+
+        return $this->entityMetadataCached[$entityClassName];
+    }
+
+    public function getEntityPrimaryAttribute(string $entityClassName): ?string
+    {
+        $fields = $this->getEntityFields($entityClassName);
+
+        foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
+            if (array_key_exists($name, $fields)) {
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
     public static function getEntityList(EntityManagerInterface $entityManager): array
     {
         if (empty(self::$entityListCached)) {
@@ -105,38 +133,6 @@ class EntityHelper
 
     public static function guessPrimaryFieldName(array $fields): ?string
     {
-        foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
-            if (array_key_exists($name, $fields)) {
-                return $name;
-            }
-        }
-
-        return null;
-    }
-
-    public function getRelationClassName(
-        string $baseEntityClassName,
-        string $relationFieldName,
-    ): string {
-        return $this
-            ->getMetadata($baseEntityClassName)
-            ->getAssociationMapping($relationFieldName)['targetEntity'];
-    }
-
-    public function getMetadata(string $entityClassName): ClassMetadata
-    {
-        if (!array_key_exists($entityClassName, $this->entityMetadataCached)) {
-            $this->entityMetadataCached[$entityClassName] = $this->entityManager->getClassMetadata($entityClassName);
-        }
-
-        return $this->entityMetadataCached[$entityClassName];
-    }
-
-    public function getEntityPrimaryAttribute(
-        string $entityClassName,
-    ): ?string {
-        $fields = $this->getEntityFields($entityClassName);
-
         foreach (self::PRIMARY_FIELD_TYPICAL_NAMES as $name) {
             if (array_key_exists($name, $fields)) {
                 return $name;
