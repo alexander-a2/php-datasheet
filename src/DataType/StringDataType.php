@@ -8,14 +8,22 @@ use AlexanderA2\PhpDatasheet\Filter\EqualsFilter;
 
 class StringDataType implements DataTypeInterface
 {
+    public const MAX_LENGTH = 100;
+
     public static function toString($value): string
     {
-        return (string) $value;
+        $value = (string)$value;
+
+        if (mb_strlen($value) > self::MAX_LENGTH) {
+            $value = mb_substr($value, 0, self::MAX_LENGTH) . '…';
+        }
+
+        return $value;
     }
 
     public static function fromString($value): string
     {
-        return (string) $value;
+        return (string)$value;
     }
 
     public static function getFilters(): array

@@ -13,13 +13,13 @@ class Datasheet implements DatasheetInterface
         'column_filters' => 'cf',
     ];
 
-    protected bool $isBuilt = false;
-
     protected ArrayCollection $data;
 
     protected array $columns;
 
     protected array $customizedColumns;
+
+    protected array $removedColumns = [];
 
     protected DataReaderInterface $dataReader;
 
@@ -87,6 +87,22 @@ class Datasheet implements DatasheetInterface
         return $this->customizedColumns ?? [];
     }
 
+    public function getRemovedColumns(): array
+    {
+        return $this->removedColumns;
+    }
+
+    public function removeColumn(string $name): self
+    {
+        if (empty($this->columns)) {
+            $this->removedColumns[] = $name;
+        } else {
+            unset($this->columns[$name]);
+        }
+
+        return $this;
+    }
+
     public function getDataReader(): DataReaderInterface
     {
         return $this->dataReader;
@@ -151,13 +167,6 @@ class Datasheet implements DatasheetInterface
     public function setTotalRecordsFiltered(int $totalRecordsFiltered): self
     {
         $this->totalRecordsFiltered = $totalRecordsFiltered;
-        return $this;
-    }
-
-    public function setBuilt(): self
-    {
-        $this->isBuilt = true;
-
         return $this;
     }
 

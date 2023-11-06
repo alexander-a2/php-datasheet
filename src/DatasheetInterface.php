@@ -28,10 +28,12 @@ interface DatasheetInterface
 
     public function getColumns(): array;
 
+    public function removeColumn(string $name): self;
+
     /**
      * @return DatasheetColumnCustomized[]
      */
     public function getCustomizedColumns(): array;
 
-    public function setBuilt(): self;
+    public function getRemovedColumns(): array;
 }

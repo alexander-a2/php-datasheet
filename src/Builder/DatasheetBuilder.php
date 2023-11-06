@@ -31,6 +31,7 @@ class DatasheetBuilder
         $this->resolveDataReader($datasheet);
         $this->buildColumns($datasheet);
         $this->updateCustomizedColumns($datasheet);
+        $this->removeColumns($datasheet);
         $this->attachDatasheetFilters($datasheet);
         $this->attachColumnFilters($datasheet);
         $this->fillFiltersWithRequestedParams($datasheet, $parameters);
@@ -38,7 +39,6 @@ class DatasheetBuilder
         $this->applyFilters($datasheet);
         $this->buildFilteredTotals($datasheet);
         $this->readData($datasheet);
-        $datasheet->setBuilt();
 
         return $datasheet;
     }
@@ -71,6 +71,13 @@ class DatasheetBuilder
                     ObjectHelper::getProperty($customizedColumn, $attribute)
                 );
             }
+        }
+    }
+
+    protected function removeColumns(DatasheetInterface $datasheet): void
+    {
+        foreach ($datasheet->getRemovedColumns() as $columnName) {
+            $datasheet->removeColumn($columnName);
         }
     }
 
