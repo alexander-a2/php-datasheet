@@ -2,6 +2,8 @@
 
 namespace AlexanderA2\PhpDatasheet\Resolver;
 
+use AlexanderA2\PhpDatasheet\DataType\ObjectDataType;
+
 class DataTypeResolver
 {
     public function __construct(
@@ -16,5 +18,7 @@ class DataTypeResolver
                 return $dataType;
             }
         }
+
+        return ObjectDataType::class;
     }
 }

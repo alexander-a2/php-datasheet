@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace AlexanderA2\PhpDatasheet\DataType;
 
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
-use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
 use AlexanderA2\PhpDatasheet\Helper\StringHelper;
 use DateTimeInterface;
 use Exception;
