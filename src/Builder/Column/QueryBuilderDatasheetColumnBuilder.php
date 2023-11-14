@@ -6,15 +6,15 @@ use AlexanderA2\PhpDatasheet\DatasheetColumn;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\QueryBuilderHelper;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
 {
     public static function supports(DatasheetInterface $datasheet): bool
     {
-        return $datasheet->getSource() instanceof QueryBuilder || $datasheet->getSource() instanceof ServiceEntityRepository;
+        return $datasheet->getSource() instanceof QueryBuilder || $datasheet->getSource() instanceof EntityRepository;
     }
 
     public function addColumnsToDatasheet(DatasheetInterface $datasheet): DatasheetInterface
