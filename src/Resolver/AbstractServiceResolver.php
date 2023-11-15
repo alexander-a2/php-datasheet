@@ -13,7 +13,6 @@ abstract class AbstractServiceResolver
 
     public function resolve(mixed $context): mixed
     {
-        dd(iterator_to_array($context));
         foreach ($this->services as $service) {
             if ($service->supports($context)) {
                 return $service;

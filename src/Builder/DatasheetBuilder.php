@@ -61,6 +61,9 @@ class DatasheetBuilder
     protected function updateCustomizedColumns(DatasheetInterface $datasheet): void
     {
         foreach ($datasheet->getCustomizedColumns() as $columnName => $customizedColumn) {
+            if (!array_key_exists($columnName, $datasheet->getColumns())) {
+                continue;
+            }
             /** @var DatasheetColumnInterface $column */
             $column = $datasheet->getColumns()[$columnName];
 
