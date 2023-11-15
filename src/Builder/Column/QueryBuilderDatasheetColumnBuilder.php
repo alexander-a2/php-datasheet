@@ -2,19 +2,19 @@
 
 namespace AlexanderA2\PhpDatasheet\Builder\Column;
 
+use AlexanderA2\PhpDatasheet\DataReader\QueryBuilderDataReader;
 use AlexanderA2\PhpDatasheet\DatasheetColumn;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\Helper\EntityHelper;
 use AlexanderA2\PhpDatasheet\Helper\QueryBuilderHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
 {
     public static function supports(DatasheetInterface $datasheet): bool
     {
-        return $datasheet->getSource() instanceof QueryBuilder || $datasheet->getSource() instanceof EntityRepository;
+        return $datasheet->getDataReader() instanceof QueryBuilderDataReader;
     }
 
     public function addColumnsToDatasheet(DatasheetInterface $datasheet): DatasheetInterface
@@ -48,23 +48,5 @@ class QueryBuilderDatasheetColumnBuilder implements ColumnBuilderInterface
         foreach (EntityHelper::get($entityManager)->getEntityFields($entityClassName) as $fieldName => $fieldType) {
             $datasheet->addColumn(new DatasheetColumn($fieldName, EntityHelper::resolveDataTypeByFieldType($fieldType)));
         }
-    }
-
-    protected function getSelectsFromQueryBuilder(QueryBuilder $queryBuilder): array
-    {
-        $selects = $queryBuilder->getDQLPart('select');
-        $allEntityFields = EntityHelper::get($queryBuilder->getEntityManager())
-            ->getEntityFields(QueryBuilderHelper::getPrimaryClass($queryBuilder));
-        $selectedFields = [];
-
-        foreach ($selects as $select) {
-            $select = QueryBuilderHelper::parseSelect($select);
-            $fieldName = $select['as'] ?? $select['fieldName'] ?? null;
-            if ($fieldName) {
-                $selectedFields[$fieldName] = $allEntityFields[$fieldName];
-            }
-        }
-
-        return $selectedFields;
     }
 }

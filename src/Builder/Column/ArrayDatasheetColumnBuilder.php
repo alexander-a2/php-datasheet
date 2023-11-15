@@ -2,6 +2,7 @@
 
 namespace AlexanderA2\PhpDatasheet\Builder\Column;
 
+use AlexanderA2\PhpDatasheet\DataReader\ArrayDataReader;
 use AlexanderA2\PhpDatasheet\DatasheetColumn;
 use AlexanderA2\PhpDatasheet\DatasheetInterface;
 use AlexanderA2\PhpDatasheet\DataType\ObjectDataType;
@@ -12,7 +13,7 @@ class ArrayDatasheetColumnBuilder implements ColumnBuilderInterface
 {
     public static function supports(DatasheetInterface $datasheet): bool
     {
-        return is_array($datasheet->getSource());
+        return $datasheet->getDataReader() instanceof ArrayDataReader;
     }
 
     public function addColumnsToDatasheet(DatasheetInterface $datasheet): DatasheetInterface
