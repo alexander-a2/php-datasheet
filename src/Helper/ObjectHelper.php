@@ -2,10 +2,13 @@
 
 namespace AlexanderA2\PhpDatasheet\Helper;
 
+use PHPUnit\Util\Exception;
 use Throwable;
 
 class ObjectHelper
 {
+    private const GETTER_PREFIXES = ['get', 'is', 'has', ''];
+
     public static function getProperty(mixed $object, string $propertyName, $throwException = false): mixed
     {
         try {
@@ -14,15 +17,19 @@ class ObjectHelper
             }
 
             if (is_object($object)) {
-                $getter = 'get' . $propertyName;
+                foreach (self::GETTER_PREFIXES as $prefix) {
+                    $getter = $prefix . $propertyName;
 
-                if (method_exists($object, $getter)) {
-                    return $object->{$getter}();
+                    if (method_exists($object, $getter)) {
+                        return $object->{$getter}();
+                    }
                 }
             }
+
+            throw new Exception('Getter method not found: ' . (implode('/', self::GETTER_PREFIXES)) . ' + ' . $propertyName);
         } catch (Throwable $exception) {
             if ($throwException) {
-                throw new $exception;
+                throw $exception;
             }
         }
 
@@ -45,7 +52,7 @@ class ObjectHelper
             }
         } catch (Throwable $exception) {
             if ($throwException) {
-                throw new $exception;
+                throw $exception;
             }
         }
 
