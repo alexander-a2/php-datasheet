@@ -32,6 +32,7 @@ class EntityHelper
         'full_name',
         'title',
         'email',
+        'id',
     ];
 
     static array $entityListCached;
