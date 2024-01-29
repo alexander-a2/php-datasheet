@@ -3,7 +3,6 @@
 namespace AlexanderA2\PhpDatasheet;
 
 use AlexanderA2\PhpDatasheet\Helper\ObjectHelper;
-use AlexanderA2\PhpDatasheet\Helper\StringHelper;
 
 class DatasheetColumn implements DatasheetColumnInterface
 {
@@ -15,7 +14,7 @@ class DatasheetColumn implements DatasheetColumnInterface
         protected string $name,
         protected ?string $dataType,
     ) {
-        $this->title = StringHelper::toReadable($this->name);
+        $this->title = $name;
     }
 
     public function getName(): string

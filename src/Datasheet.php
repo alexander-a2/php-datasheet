@@ -31,6 +31,8 @@ class Datasheet implements DatasheetInterface
 
     protected array $columnFilters = [];
 
+    protected string $columnNamePrefix = '';
+
     public function __construct(
         protected mixed   $source,
         protected ?string $id = null,
@@ -167,6 +169,17 @@ class Datasheet implements DatasheetInterface
     public function setTotalRecordsFiltered(int $totalRecordsFiltered): self
     {
         $this->totalRecordsFiltered = $totalRecordsFiltered;
+        return $this;
+    }
+
+    public function getColumnNamePrefix(): string
+    {
+        return $this->columnNamePrefix;
+    }
+
+    public function setColumnNamePrefix(string $columnNamePrefix): self
+    {
+        $this->columnNamePrefix = $columnNamePrefix;
         return $this;
     }
 
