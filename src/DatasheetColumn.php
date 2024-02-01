@@ -11,7 +11,7 @@ class DatasheetColumn implements DatasheetColumnInterface
     protected mixed $handler = null;
 
     public function __construct(
-        protected string $name,
+        protected string  $name,
         protected ?string $dataType,
     ) {
         $this->title = $name;
@@ -57,13 +57,13 @@ class DatasheetColumn implements DatasheetColumnInterface
 
     public function getContent(mixed $record): string
     {
-        $value = ObjectHelper::getProperty($record, $this->name) ?: null;
+        $value = ObjectHelper::getProperty($record, $this->name) ?? null;
 
         if ($this->handler) {
             return call_user_func($this->handler, $value, $record, $this);
         }
 
-        if (empty($value)) {
+        if (is_null($value)) {
             return '';
         }
 
